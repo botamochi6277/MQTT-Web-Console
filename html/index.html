@@ -48,16 +48,14 @@
             v-model="topic"
           />
         </div>
-        <button class="btn btn-primary" onclick="beginSubscribe()">
-          Start Subscribing
-        </button>
+
         <div class="form-check form-switch form-control-lg">
           <input
             class="form-check-input"
             type="checkbox"
             id="flexSwitchCheckDefault"
-            v-model="is_subscribing"
-            onchange="beginSubscribe()"
+            v-model="is_active"
+            onchange="switchClient()"
           />
           <label class="form-check-label" for="flexSwitchCheckDefault">
             {{state}}
@@ -82,8 +80,8 @@
             message: '',
             topic: 'floor1/room1',
             counter: 0,
-            is_subscribing: false,
-            state: 'Non-Subscribing',
+            is_active: false,
+            state: 'Disconnected',
           }
         },
       }
@@ -92,21 +90,27 @@
 
       //   let pub = mqtt.connect('wss://test.mosquitto.org:8081')
 
-      let sub = null // prepare subscriber
-      function beginSubscribe() {
-        let url = `wss://${main_app.mqtt_server}:${main_app.mqtt_port}`
-        main_app.sub = mqtt.connect(url)
-        console.log(`try to connect with ${url}`)
-        main_app.sub.subscribe(main_app.topic)
-
-        if (main_app.is_subscribing) {
-          main_app.state = 'Subscribing'
+      let client
+      function switchClient() {
+        if (main_app.is_active) {
+          main_app.state = 'Connecting ...'
+        } else {
+          main_app.state = 'Disconnected'
+          client.end()
         }
+        let url = `wss://${main_app.mqtt_server}:${main_app.mqtt_port}`
+        client = mqtt.connect(url)
+        console.log(`try to connect with ${url}`)
+        client.subscribe(main_app.topic)
 
-        console.log(`start subscribing ${main_app.topic}`)
-        main_app.sub.on('message', function (topic, message) {
+        client.on('connect', function () {
+          main_app.state = 'Subscribing'
+          console.log(`start subscribing ${main_app.topic}`)
+        })
+
+        client.on('message', function (topic, message) {
           // message is Buffer
-          console.log('sub: ' + message.toString())
+          console.log('client: ' + message.toString())
           main_app.message = message.toString()
         })
       }
