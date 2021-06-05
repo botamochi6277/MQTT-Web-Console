@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <!-- https://qiita.com/narutaro/items/2819ce79eb82a87357eb -->
+  <head>
+    <meta charset="utf-8" />
+    <title>MQTT DASH</title>
+    <!-- Bootstrap css -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
+      crossorigin="anonymous"
+    />
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  </head>
+
+  <body>
+    <div class="container">
+      <div id="main">
+        <h1>{{title}}</h1>
+
+        <div class="input-group mb-3">
+          <span class="input-group-text">wss://</span>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Server"
+            aria-label="Server"
+            v-model="mqtt_server"
+          />
+          <span class="input-group-text">:</span>
+          <input
+            type="number"
+            class="form-control"
+            placeholder="Port"
+            aria-label="Port"
+            v-model="mqtt_port"
+          />
+        </div>
+        <div class="input-group mb-3">
+          <span class="input-group-text" id="topic">Topic</span>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="topic"
+            aria-label="topic"
+            aria-describedby="topic"
+            v-model="topic"
+          />
+        </div>
+        <button class="btn btn-primary" onclick="beginSubscribe()">
+          Start Subscribing
+        </button>
+        <div class="form-check form-switch form-control-lg">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="flexSwitchCheckDefault"
+            v-model="is_subscribing"
+            onchange="beginSubscribe()"
+          />
+          <label class="form-check-label" for="flexSwitchCheckDefault">
+            {{state}}
+          </label>
+        </div>
+
+        <div class="bg-light">
+          Message:
+          <p>{{message}}</p>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/vue@next"></script>
+    <script>
+      const MainApp = {
+        data() {
+          return {
+            title: 'MQTT Dash',
+            mqtt_server: 'test.mosquitto.org',
+            mqtt_port: 8081,
+            message: '',
+            topic: 'floor1/room1',
+            counter: 0,
+            is_subscribing: false,
+            state: 'Non-Subscribing',
+          }
+        },
+      }
+
+      let main_app = Vue.createApp(MainApp).mount('#main')
+
+      //   let pub = mqtt.connect('wss://test.mosquitto.org:8081')
+
+      let sub = null // prepare subscriber
+      function beginSubscribe() {
+        let url = `wss://${main_app.mqtt_server}:${main_app.mqtt_port}`
+        main_app.sub = mqtt.connect(url)
+        console.log(`try to connect with ${url}`)
+        main_app.sub.subscribe(main_app.topic)
+
+        if (main_app.is_subscribing) {
+          main_app.state = 'Subscribing'
+        }
+
+        console.log(`start subscribing ${main_app.topic}`)
+        main_app.sub.on('message', function (topic, message) {
+          // message is Buffer
+          console.log('sub: ' + message.toString())
+          main_app.message = message.toString()
+        })
+      }
+    </script>
+  </body>
+</html>
