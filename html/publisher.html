@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <!-- https://qiita.com/narutaro/items/2819ce79eb82a87357eb -->
+  <head>
+    <meta charset="utf-8" />
+    <title>MQTT Publisher</title>
+    <!-- Bootstrap css -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
+      crossorigin="anonymous"
+    />
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  </head>
+
+  <body>
+    <div class="container">
+      <div id="main">
+        <h1>{{title}}</h1>
+
+        <div class="input-group mb-3">
+          <span class="input-group-text">wss://</span>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Server"
+            aria-label="Server"
+            v-model="mqtt_server"
+          />
+          <span class="input-group-text">:</span>
+          <input
+            type="number"
+            class="form-control"
+            placeholder="Port"
+            aria-label="Port"
+            v-model="mqtt_port"
+          />
+        </div>
+        <div class="input-group mb-3">
+          <span class="input-group-text" id="topic">Topic</span>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="topic"
+            aria-label="topic"
+            aria-describedby="topic"
+            v-model="topic"
+          />
+        </div>
+
+        <div class="form-check form-switch form-control-lg">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="flexSwitchCheckDefault"
+            v-model="is_active"
+            onchange="switchClient()"
+          />
+          <label class="form-check-label" for="flexSwitchCheckDefault">
+            {{state}}
+          </label>
+        </div>
+
+        <button class="btn btn-primary" onclick="pub()">Publish</button>
+
+        <div class="bg-light">
+          Message:
+          <p>{{message}}</p>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/vue@next"></script>
+    <script>
+      const MainApp = {
+        data() {
+          return {
+            title: 'MQTT Publisher',
+            mqtt_server: 'test.mosquitto.org',
+            mqtt_port: 8081,
+            message: '',
+            topic: 'floor1/room1',
+            counter: 0,
+            is_active: false,
+            state: 'Disconnected',
+          }
+        },
+      }
+
+      let main_app = Vue.createApp(MainApp).mount('#main')
+
+      //   let pub = mqtt.connect('wss://test.mosquitto.org:8081')
+
+      let client
+      function switchClient() {
+        console.log(`Switch state: ${main_app.is_active}`)
+        if (main_app.is_active) {
+          main_app.state = 'Connecting ...'
+        } else {
+          main_app.state = 'Disconnected'
+          client.end()
+          return
+        }
+        let url = `wss://${main_app.mqtt_server}:${main_app.mqtt_port}`
+        client = mqtt.connect(url)
+        console.log(`try to connect with ${url}`)
+        client.subscribe(main_app.topic)
+
+        client.on('connect', function () {
+          main_app.state = 'Connected'
+          console.log(`connected`)
+        })
+      }
+
+      function pub() {
+        metric = { hello: 'world' }
+        client.publish(main_app.topic, JSON.stringify(metric))
+      }
+    </script>
+  </body>
+</html>
