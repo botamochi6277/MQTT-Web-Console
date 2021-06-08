@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+  <!-- https://qiita.com/narutaro/items/2819ce79eb82a87357eb -->
+  <head>
+    <meta charset="utf-8" />
+    <title>MQTT JSON Plotter</title>
+    <!-- Bootstrap css -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
+      crossorigin="anonymous"
+    />
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  </head>
+
+  <body>
+    <div class="container">
+      <div id="main">
+        <h1>{{title}}</h1>
+
+        <div class="input-group mb-3">
+          <span class="input-group-text">wss://</span>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Server"
+            aria-label="Server"
+            v-model="mqtt_server"
+          />
+          <span class="input-group-text">:</span>
+          <input
+            type="number"
+            class="form-control"
+            placeholder="Port"
+            aria-label="Port"
+            v-model="mqtt_port"
+          />
+        </div>
+        <div class="input-group mb-3">
+          <span class="input-group-text" id="topic">Topic</span>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="topic"
+            aria-label="topic"
+            aria-describedby="topic"
+            v-model="topic"
+          />
+        </div>
+        <div class="input-group mb-3">
+          <span class="input-group-text" id="max_length">max length</span>
+          <input
+            type="number"
+            class="form-control"
+            placeholder="max_length"
+            aria-label="max_length"
+            aria-describedby="max_length"
+            v-model="max_length"
+          />
+        </div>
+        <div class="input-group mb-3" id="palette">
+          <span class="input-group-text">Color Palette</span>
+          <input
+            type="color"
+            class="form-control form-control-color"
+            v-model="color_palette[0]"
+          />
+          <input
+            type="color"
+            class="form-control form-control-color"
+            v-model="color_palette[1]"
+          />
+          <input
+            type="color"
+            class="form-control form-control-color"
+            v-model="color_palette[2]"
+          />
+          <input
+            type="color"
+            class="form-control form-control-color"
+            v-model="color_palette[3]"
+          />
+          <input
+            type="color"
+            class="form-control form-control-color"
+            v-model="color_palette[4]"
+          />
+          <input
+            type="color"
+            class="form-control form-control-color"
+            v-model="color_palette[5]"
+          />
+          <input
+            type="color"
+            class="form-control form-control-color"
+            v-model="color_palette[6]"
+          />
+          <input
+            type="color"
+            class="form-control form-control-color"
+            v-model="color_palette[7]"
+          />
+        </div>
+
+        <div class="form-check form-switch form-control-lg">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="flexSwitchCheckDefault"
+            v-model="is_active"
+            onchange="switchClient()"
+          />
+          <label class="form-check-label" for="flexSwitchCheckDefault">
+            {{state}}
+          </label>
+        </div>
+
+        <div class="bg-light">
+          Message:
+          <p>{{message}}</p>
+        </div>
+        <button onclick="addData(myChart,8,30)">add data</button>
+        <button
+          class="btn btn-primary"
+          onclick="addValue(myChart,{n:60,dummy:50})"
+        >
+          add val
+        </button>
+
+        <div>
+          <canvas id="myChart" width="400" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/vue@next"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.3.2/dist/chart.min.js"></script>
+    <script>
+      const MainApp = {
+        data() {
+          return {
+            title: 'MQTT Json Plotter',
+            mqtt_server: 'test.mosquitto.org',
+            mqtt_port: 8081,
+            message: '',
+            topic: 'floor1/room1',
+            counter: 0,
+            is_active: false,
+            state: 'Disconnected',
+            color_palette: [
+              '#0173b2',
+              '#de8f05',
+              '#029e73',
+              '#d55e00',
+              '#cc78bc',
+              '#ca9161',
+              '#fbafe4',
+              '#949494',
+            ],
+            max_length: 20,
+          }
+        },
+      }
+
+      let main_app = Vue.createApp(MainApp).mount('#main')
+
+      //   let pub = mqtt.connect('wss://test.mosquitto.org:8081')
+
+      let client
+      function switchClient() {
+        console.log(`Switch state: ${main_app.is_active}`)
+        if (main_app.is_active) {
+          main_app.state = 'Connecting ...'
+        } else {
+          main_app.state = 'Disconnected'
+          client.end()
+          return
+        }
+        let url = `wss://${main_app.mqtt_server}:${main_app.mqtt_port}`
+        client = mqtt.connect(url)
+        console.log(`try to connect with ${url}`)
+        client.subscribe(main_app.topic)
+
+        client.on('connect', function () {
+          main_app.state = 'Subscribing'
+          console.log(`start subscribing ${main_app.topic}`)
+        })
+
+        client.on('message', function (topic, message) {
+          // message is Buffer
+          console.log('client: ' + message.toString())
+          main_app.message = message.toString()
+
+          // try {
+          //   // https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse
+          //   const obj = JSON.parse(json)
+          // } catch (SyntaxError) {
+
+          // }
+        })
+      }
+    </script>
+
+    <script>
+      let count = 0
+      let ctx = document.getElementById('myChart').getContext('2d')
+      let labels = [1, 2, 3, 4, 5, 6, 7]
+      let data = {
+        labels: labels,
+        datasets: [
+          {
+            label: 'dummy',
+            data: [65, 59, 80, 81, 56, 55, 40],
+            fill: false,
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0,
+          },
+        ],
+      }
+      let config = {
+        type: 'line',
+        data: data,
+      }
+      var myChart = new Chart(ctx, config)
+      function addData(chart, label, data) {
+        chart.data.labels.push(label)
+        chart.data.datasets.forEach((dataset) => {
+          dataset.data.push(data)
+        })
+        chart.update()
+      }
+
+      function addValue(chart, data) {
+        if (count == 0) {
+          //init plot
+          chart.data.labels = []
+          chart.data.datasets = []
+        }
+        count += 1
+        console.log(count)
+        chart.data.labels.push(count) // add x-value
+
+        data_labels = []
+        chart.data.datasets.forEach((dataset) =>
+          data_labels.push(dataset.label),
+        )
+
+        for (let key in data) {
+          let i = data_labels.findIndex((element) => element == key)
+          if (i > -1) {
+            chart.data.datasets[i].data.push(data[key])
+          } else {
+            let j = chart.data.datasets.length % main_app.color_palette.length
+            // create new dataset
+            new_dataset = {
+              label: key,
+              data: [data[key]],
+              borderColor: main_app.color_palette[j],
+            }
+            chart.data.datasets.push(new_dataset)
+          }
+        }
+        chart.update()
+      }
+
+      function removeData(chart) {
+        chart.data.labels.pop()
+        chart.data.datasets.forEach((dataset) => {
+          dataset.data.pop()
+        })
+        chart.update()
+      }
+    </script>
+  </body>
+</html>
