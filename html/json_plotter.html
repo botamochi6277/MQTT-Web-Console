@@ -192,12 +192,13 @@
           console.log('client: ' + message.toString())
           main_app.message = message.toString()
 
-          // try {
-          //   // https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse
-          //   const obj = JSON.parse(json)
-          // } catch (SyntaxError) {
-
-          // }
+          try {
+            // https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse
+            const obj = JSON.parse(message)
+            addValue(myChart, obj)
+          } catch (SyntaxError) {
+            console.log('fail to parse json')
+          }
         })
       }
     </script>
