@@ -123,7 +123,7 @@
         <button onclick="addData(myChart,8,30)">add data</button>
         <button
           class="btn btn-primary"
-          onclick="addValue(myChart,{n:60,dummy:50})"
+          onclick="addValue(myChart,{n:Math.sin(count/10.0*3.141),dummy:1.2})"
         >
           add val
         </button>
@@ -261,15 +261,18 @@
             chart.data.datasets.push(new_dataset)
           }
         }
+
+        if (chart.data.labels.length > main_app.max_length) {
+          shiftData(chart)
+        }
         chart.update()
       }
 
-      function removeData(chart) {
-        chart.data.labels.pop()
+      function shiftData(chart) {
+        chart.data.labels.shift()
         chart.data.datasets.forEach((dataset) => {
-          dataset.data.pop()
+          dataset.data.shift()
         })
-        chart.update()
       }
     </script>
   </body>
