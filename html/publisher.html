@@ -49,6 +49,18 @@
           />
         </div>
 
+        <div class="input-group mb-3">
+          <span class="input-group-text" id="data">Data</span>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="data"
+            aria-label="data"
+            aria-describedby="data"
+            v-model="data"
+          />
+        </div>
+
         <div class="form-check form-switch form-control-lg">
           <input
             class="form-check-input"
@@ -62,7 +74,9 @@
           </label>
         </div>
 
-        <button class="btn btn-primary" onclick="pub()">Publish</button>
+        <button class="btn btn-primary" onclick="publishTopic()">
+          Publish
+        </button>
 
         <div class="bg-light">
           Message:
@@ -84,6 +98,7 @@
             counter: 0,
             is_active: false,
             state: 'Disconnected',
+            data: '',
           }
         },
       }
@@ -113,9 +128,9 @@
         })
       }
 
-      function pub() {
-        metric = { hello: 'world' }
-        client.publish(main_app.topic, JSON.stringify(metric))
+      function publishTopic() {
+        client.publish(main_app.topic, main_app.data)
+        main_app.message = `Publish \"${main_app.data}\"`
       }
     </script>
   </body>
