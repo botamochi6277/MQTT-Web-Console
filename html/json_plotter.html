@@ -196,8 +196,10 @@
             // https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse
             const obj = JSON.parse(message)
             addValue(myChart, obj)
-          } catch (SyntaxError) {
-            console.log('fail to parse json')
+          } catch (error) {
+            console.error(error)
+            console.log('fail to parse as json')
+            main_app.message += '\n\r fail to parse as json'
           }
         })
       }
@@ -239,14 +241,13 @@
           chart.data.datasets = []
         }
         count += 1
-        console.log(count)
         chart.data.labels.push(count) // add x-value
 
         data_labels = []
         chart.data.datasets.forEach((dataset) =>
           data_labels.push(dataset.label),
         )
-
+        let has_new_dataset = false
         for (let key in data) {
           let i = data_labels.findIndex((element) => element == key)
           if (i > -1) {
@@ -260,11 +261,16 @@
               borderColor: main_app.color_palette[j],
             }
             chart.data.datasets.push(new_dataset)
+            has_new_dataset = true
           }
         }
 
         if (chart.data.labels.length > main_app.max_length) {
           shiftData(chart)
+        }
+        if (has_new_dataset) {
+          // has no effect
+          chart.clear()
         }
         chart.update()
       }
