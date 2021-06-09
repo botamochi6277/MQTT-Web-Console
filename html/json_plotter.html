@@ -217,7 +217,23 @@
       let config = {
         type: 'line',
         data: data,
+        // Configuration options go here
+        options: {
+          animation: {
+            duration: 0, // general animation time
+          },
+          hover: {
+            animationDuration: 0, // duration of animations when hovering an item
+          },
+          responsiveAnimationDuration: 0, // animation duration after a resize
+          elements: {
+            line: {
+              tension: 0, // disables bezier curves
+            },
+          },
+        },
       }
+
       var myChart = new Chart(ctx, config)
       function addData(chart, label, data) {
         chart.data.labels.push(label)
