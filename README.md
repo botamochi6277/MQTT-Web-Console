@@ -4,7 +4,7 @@ You can publish and subscribe with web browser.
 
 - [Subscriber](https://botamochi6277.github.io/MQTT-Web-Console/html/index.html)
 - [Publisher](https://botamochi6277.github.io/MQTT-Web-Console/html/publisher.html)
-- [Json](https://botamochi6277.github.io/MQTT-Web-Console/html/json_plotter.html)
+- [Json Plotter](https://botamochi6277.github.io/MQTT-Web-Console/html/json_plotter.html)
 
 ## References
 
