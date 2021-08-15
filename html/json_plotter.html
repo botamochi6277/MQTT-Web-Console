@@ -19,88 +19,101 @@
       <div id="main">
         <h1>{{title}}</h1>
 
-        <div class="input-group mb-3">
-          <span class="input-group-text">wss://</span>
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Server"
-            aria-label="Server"
-            v-model="mqtt_server"
-          />
-          <span class="input-group-text">:</span>
-          <input
-            type="number"
-            class="form-control"
-            placeholder="Port"
-            aria-label="Port"
-            v-model="mqtt_port"
-          />
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="input-group mb-3">
+              <span class="input-group-text">wss://</span>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Server"
+                aria-label="Server"
+                v-model="mqtt_server"
+              />
+              <span class="input-group-text">:</span>
+              <input
+                type="number"
+                class="form-control"
+                placeholder="Port"
+                aria-label="Port"
+                v-model="mqtt_port"
+              />
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="input-group mb-3">
+              <span class="input-group-text" id="topic">Topic</span>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="topic"
+                aria-label="topic"
+                aria-describedby="topic"
+                v-model="topic"
+              />
+            </div>
+          </div>
         </div>
-        <div class="input-group mb-3">
-          <span class="input-group-text" id="topic">Topic</span>
-          <input
-            type="text"
-            class="form-control"
-            placeholder="topic"
-            aria-label="topic"
-            aria-describedby="topic"
-            v-model="topic"
-          />
-        </div>
-        <div class="input-group mb-3">
-          <span class="input-group-text" id="max_length">max length</span>
-          <input
-            type="number"
-            class="form-control"
-            placeholder="max_length"
-            aria-label="max_length"
-            aria-describedby="max_length"
-            v-model="max_length"
-          />
-        </div>
-        <div class="input-group mb-3" id="palette">
-          <span class="input-group-text">Color Palette</span>
-          <input
-            type="color"
-            class="form-control form-control-color"
-            v-model="color_palette[0]"
-          />
-          <input
-            type="color"
-            class="form-control form-control-color"
-            v-model="color_palette[1]"
-          />
-          <input
-            type="color"
-            class="form-control form-control-color"
-            v-model="color_palette[2]"
-          />
-          <input
-            type="color"
-            class="form-control form-control-color"
-            v-model="color_palette[3]"
-          />
-          <input
-            type="color"
-            class="form-control form-control-color"
-            v-model="color_palette[4]"
-          />
-          <input
-            type="color"
-            class="form-control form-control-color"
-            v-model="color_palette[5]"
-          />
-          <input
-            type="color"
-            class="form-control form-control-color"
-            v-model="color_palette[6]"
-          />
-          <input
-            type="color"
-            class="form-control form-control-color"
-            v-model="color_palette[7]"
-          />
+
+        <div class="row">
+          <div class="col-6">
+            <div class="input-group mb-3">
+              <span class="input-group-text" id="max_length">max length</span>
+              <input
+                type="number"
+                class="form-control"
+                placeholder="max_length"
+                aria-label="max_length"
+                aria-describedby="max_length"
+                v-model="max_length"
+              />
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="input-group mb-3" id="palette">
+              <span class="input-group-text">Color Palette</span>
+              <input
+                type="color"
+                class="form-control form-control-color"
+                v-model="color_palette[0]"
+              />
+              <input
+                type="color"
+                class="form-control form-control-color"
+                v-model="color_palette[1]"
+              />
+              <input
+                type="color"
+                class="form-control form-control-color"
+                v-model="color_palette[2]"
+              />
+              <input
+                type="color"
+                class="form-control form-control-color"
+                v-model="color_palette[3]"
+              />
+              <input
+                type="color"
+                class="form-control form-control-color"
+                v-model="color_palette[4]"
+              />
+              <input
+                type="color"
+                class="form-control form-control-color"
+                v-model="color_palette[5]"
+              />
+              <input
+                type="color"
+                class="form-control form-control-color"
+                v-model="color_palette[6]"
+              />
+              <input
+                type="color"
+                class="form-control form-control-color"
+                v-model="color_palette[7]"
+              />
+            </div>
+          </div>
         </div>
 
         <div class="form-check form-switch form-control-lg">
