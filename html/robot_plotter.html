@@ -148,7 +148,7 @@
               <canvas id="servo" width="400" height="200"></canvas>
             </div>
             <div class="col-6">
-              <canvas id="myChart" width="400" height="200"></canvas>
+              <canvas id="mic" width="400" height="200"></canvas>
             </div>
           </div>
         </div>
@@ -232,6 +232,11 @@
               addValue(servo_chart, obj['servo'], count)
             }
 
+            if (obj['mic']) {
+              v = { mic: obj['mic'] }
+              addValue(mic_chart, v, count)
+            }
+
             count += 1
           } catch (error) {
             console.error(error)
@@ -306,6 +311,13 @@
       let servo_chart = new Chart(
         document.getElementById('servo').getContext('2d'),
         JSON.parse(JSON.stringify(servo_conf)),
+      )
+
+      let mic_conf = JSON.parse(JSON.stringify(config))
+      mic_conf.options.plugins.title.text = 'mic'
+      let mic_chart = new Chart(
+        document.getElementById('mic').getContext('2d'),
+        JSON.parse(JSON.stringify(mic_conf)),
       )
     </script>
   </body>
