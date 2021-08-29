@@ -202,7 +202,13 @@
         let url = `wss://${main_app.mqtt_server}:${main_app.mqtt_port}`
         client = mqtt.connect(url)
         console.log(`try to connect with ${url}`)
-        client.subscribe(main_app.topic)
+        client.subscribe(main_app.topic, function (err) {
+          if (err) {
+            console.log(err)
+            main_app.state = err
+            main_app.is_active = false
+          }
+        })
 
         client.on('connect', function () {
           main_app.state = 'Subscribing'
