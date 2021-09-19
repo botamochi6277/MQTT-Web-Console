@@ -125,6 +125,7 @@
             onchange="switchClient()"
           />
           <label class="form-check-label" for="flexSwitchCheckDefault">
+            <p :class="{'text-danger:has_error','text-primary':is_health}"></p>
             {{state}}
           </label>
         </div>
@@ -154,6 +155,8 @@
             topic: 'floor1/room1',
             counter: 0,
             is_active: false,
+            is_health: true,
+            has_error: false,
             state: 'Disconnected',
             color_palette: [
               '#0173b2',
@@ -167,6 +170,12 @@
             ],
             max_length: 20,
           }
+        },
+        mounted: function () {
+          // get last values
+          this.topic = localStorage.getItem('topic')
+          this.mqtt_server = localStorage.getItem('mqtt_server')
+          this.mqtt_port = parseInt(localStorage.getItem('mqtt_port'), 10)
         },
       }
 
@@ -184,6 +193,10 @@
           client.end()
           return
         }
+        localStorage.setItem('topic', main_app.topic)
+        localStorage.setItem('mqtt_server', main_app.mqtt_server)
+        localStorage.setItem('mqtt_port', main_app.mqtt_port)
+
         let url = `wss://${main_app.mqtt_server}:${main_app.mqtt_port}`
         client = mqtt.connect(url)
         console.log(`try to connect with ${url}`)
@@ -195,7 +208,10 @@
           }
         })
 
-        client.on('connect', function () {
+        client.on('connect', function (err) {
+          if (err) {
+            console.log(err)
+          }
           main_app.state = 'Subscribing'
           console.log(`start subscribing ${main_app.topic}`)
         })

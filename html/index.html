@@ -84,6 +84,12 @@
             state: 'Disconnected',
           }
         },
+        mounted: function () {
+          // get last values
+          this.topic = localStorage.getItem('topic')
+          this.mqtt_server = localStorage.getItem('mqtt_server')
+          this.mqtt_port = parseInt(localStorage.getItem('mqtt_port'), 10)
+        },
       }
 
       let main_app = Vue.createApp(MainApp).mount('#main')
@@ -100,6 +106,10 @@
           client.end()
           return
         }
+        localStorage.setItem('topic', main_app.topic)
+        localStorage.setItem('mqtt_server', main_app.mqtt_server)
+        localStorage.setItem('mqtt_port', main_app.mqtt_port)
+
         let url = `wss://${main_app.mqtt_server}:${main_app.mqtt_port}`
         client = mqtt.connect(url)
         console.log(`try to connect with ${url}`)

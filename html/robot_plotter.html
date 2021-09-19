@@ -183,6 +183,12 @@
             max_length: 20,
           }
         },
+        mounted: function () {
+          // get last values
+          this.topic = localStorage.getItem('topic')
+          this.mqtt_server = localStorage.getItem('mqtt_server')
+          this.mqtt_port = parseInt(localStorage.getItem('mqtt_port'), 10)
+        },
       }
 
       let main_app = Vue.createApp(MainApp).mount('#main')
@@ -199,6 +205,11 @@
           client.end()
           return
         }
+        // https://developer.mozilla.org/ja/docs/Learn/JavaScript/Client-side_web_APIs/Client-side_storage
+        localStorage.setItem('topic', main_app.topic)
+        localStorage.setItem('mqtt_server', main_app.mqtt_server)
+        localStorage.setItem('mqtt_port', main_app.mqtt_port)
+
         let url = `wss://${main_app.mqtt_server}:${main_app.mqtt_port}`
         client = mqtt.connect(url)
         console.log(`try to connect with ${url}`)
@@ -299,7 +310,9 @@
       // deep copy with json
       // https://qiita.com/yonedaco/items/cfb5fc4ef7e46e886cb1
       let acc_conf = JSON.parse(JSON.stringify(config))
-      acc_conf.options.plugins.title.text = 'acc'
+      acc_conf.options.plugins.title.text = 'acc [g]'
+      acc_conf.options.scales = { y: { min: -2, max: 2 } }
+      console.log(acc_conf)
       let acc_chart = new Chart(
         document.getElementById('acc').getContext('2d'),
         JSON.parse(JSON.stringify(acc_conf)),
@@ -307,13 +320,15 @@
 
       let gyro_conf = JSON.parse(JSON.stringify(config))
       gyro_conf.options.plugins.title.text = 'gyro'
+      gyro_conf.options.scales = { y: { min: -4, max: 4 } }
       let gyro_chart = new Chart(
         document.getElementById('gyro').getContext('2d'),
         JSON.parse(JSON.stringify(gyro_conf)),
       )
 
       let servo_conf = JSON.parse(JSON.stringify(config))
-      servo_conf.options.plugins.title.text = 'servo'
+      servo_conf.options.plugins.title.text = 'servo [deg]'
+      servo_conf.options.scales = { y: { min: 0, max: 180 } }
       let servo_chart = new Chart(
         document.getElementById('servo').getContext('2d'),
         JSON.parse(JSON.stringify(servo_conf)),
@@ -321,6 +336,7 @@
 
       let mic_conf = JSON.parse(JSON.stringify(config))
       mic_conf.options.plugins.title.text = 'mic'
+      mic_conf.options.scales = { y: { min: 0, max: 2048 } }
       let mic_chart = new Chart(
         document.getElementById('mic').getContext('2d'),
         JSON.parse(JSON.stringify(mic_conf)),
